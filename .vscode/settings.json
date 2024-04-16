@@ -10,4 +10,15 @@
         "pubspec.yaml": "pubspec.lock,pubspec_overrides.yaml,.packages,.flutter-plugins,.flutter-plugins-dependencies,.metadata",
         "*.dart": "${capture}.g.dart, ${capture}.freezed.dart",
     },
+    "cSpell.words": [
+        "cupertino",
+        "fluttericon",
+        "fontello",
+        "lerp",
+        "openstack",
+        "pocketbase",
+        "pubspec",
+        "roboto",
+        "rxdart"
+    ],
 }

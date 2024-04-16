@@ -1,0 +1,48 @@
+@baseUrl = {{$dotenv API_BASE_URL}}
+@adminEmail = {{$dotenv TEST_ADMIN_EMAIL}}
+@adminPassword = {{$dotenv TEST_ADMIN_PASSWORD}}
+@adminAuthToken = {{loginAdmin.response.body.$.token}}
+@userEmail = {{$dotenv TEST_USER_EMAIL}}
+@userPassword = {{$dotenv TEST_USER_PASSWORD}}
+
+// Auth
+
+# @name loginAdmin
+POST {{baseUrl}}/api/admins/auth-with-password
+Content-Type: application/json
+
+{
+    "identity": "{{adminEmail}}",
+    "password": "{{adminPassword}}"
+}
+
+### Get User
+@userId = 59ctbvks6ldwpc0
+GET {{baseUrl}}/api/collections/users/records/{{userId}}
+
+### Login
+POST {{baseUrl}}/api/collections/users/auth-with-password HTTP/1.1
+Content-Type: application/json
+
+{
+    "identity": "{{userEmail}}",
+    "password": "{{userPassword}}"
+}
+
+// Posts
+
+### Get all posts
+GET {{baseUrl}}/api/collections/posts/records
+
+### Get a post by id
+@productId = bv5m19uhqqftqb5
+GET {{baseUrl}}/api/collections/posts/records/{{productId}}
+
+### Create post
+POST {{baseUrl}}/api/collections/posts/records
+Content-Type: application/json
+Authorization: {{adminAuthToken}}
+
+{
+    "title": "Test product1"
+}

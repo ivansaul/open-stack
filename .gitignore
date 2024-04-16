@@ -1,6 +1,8 @@
 # Custom ignore list
 *.g.dart
-*.g.freezed.dart
+*.freezed.dart
+.backend/
+.env
 
 # Miscellaneous
 *.class
