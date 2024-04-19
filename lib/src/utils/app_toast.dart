@@ -15,14 +15,18 @@ class AppToast {
 
   static void showText(String text) => BotToast.showText(text: text);
 
-  static void showNotification(String message,
-          [ToastType type = ToastType.error]) =>
+  static void showNotification(
+    String message, [
+    ToastType type = ToastType.error,
+    Duration duration = const Duration(seconds: 5),
+  ]) =>
       BotToast.showCustomNotification(
-        duration: const Duration(seconds: 10),
+        duration: duration,
         enableSlideOff: true,
         toastBuilder: (cancelFunc) => ToastNotificationWidget(
           message: message,
           type: type,
+          dismissAnimationDuration: duration,
         ),
         onlyOne: true,
         crossPage: true,
