@@ -29,7 +29,7 @@ class PostController extends _$PostController {
 
     final resEither = await postsRepository.votePost(
       postId: postId,
-      userId: currentUser.id,
+      userId: currentUser.id!,
       voteType: voteType,
     );
 

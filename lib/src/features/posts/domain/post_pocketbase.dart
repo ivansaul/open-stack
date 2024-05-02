@@ -1,5 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:openstack/src/features/auth/domain/user.dart';
+import 'package:openstack/src/features/auth/domain/user_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/post.dart';
 import 'package:openstack/src/features/posts/domain/vote.dart';
 import 'package:pocketbase/pocketbase.dart';

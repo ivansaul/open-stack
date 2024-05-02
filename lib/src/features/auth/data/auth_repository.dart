@@ -5,8 +5,8 @@ import 'package:openstack/src/features/auth/domain/user.dart';
 typedef AuthEither = Future<Either<AuthException, void>>;
 
 abstract class AuthRepository {
-  User? get currentUser;
-  Stream<User?> authStateChanges();
+  UserModel? get currentUser;
+  Stream<UserModel?> authStateChanges();
   AuthEither loginWithEmailPassword(String email, String password);
   AuthEither logout();
 }

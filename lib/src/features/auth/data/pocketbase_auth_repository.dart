@@ -2,22 +2,23 @@ import 'package:fpdart/fpdart.dart';
 import 'package:openstack/src/exceptions/app_exceptions.dart';
 import 'package:openstack/src/features/auth/data/auth_repository.dart';
 import 'package:openstack/src/features/auth/domain/user.dart';
+import 'package:openstack/src/features/auth/domain/user_pocketbase.dart';
 import 'package:openstack/src/utils/in_memory_store.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class PocketBaseAuthRepository implements AuthRepository {
   final PocketBase _pb;
-  final _authState = InMemoryStore<User?>(null);
+  final _authState = InMemoryStore<UserModel?>(null);
 
   PocketBaseAuthRepository(this._pb) {
-    _onAuthStateChange();
+    _onAuthStateChanges();
   }
 
   @override
-  Stream<User?> authStateChanges() => _authState.stream;
+  Stream<UserModel?> authStateChanges() => _authState.stream;
 
   @override
-  User? get currentUser => _authState.value;
+  UserModel? get currentUser => _authState.value;
 
   @override
   AuthEither loginWithEmailPassword(String email, String password) async {
@@ -40,22 +41,23 @@ class PocketBaseAuthRepository implements AuthRepository {
   AuthEither logout() async {
     _pb.authStore.clear();
     _authState.value = null;
+    _authState.close();
     return const Right(null);
   }
 
-  void _onAuthStateChange() {
+  void _onAuthStateChanges() {
     // Initial emission
     if (_pb.authStore.isValid) {
-      final model = _pb.authStore.model as RecordModel;
-      _authState.value = User.fromJson(model.toJson());
+      final record = _pb.authStore.model as RecordModel;
+      _authState.value = UserPocketBase.fromRecordModel(record);
     }
     // Stream that gets triggered on [save()] and [clear()]
     _pb.authStore.onChange.listen((event) {
       if (event.model == null) {
         _authState.value = null;
       } else {
-        final model = event.model as RecordModel;
-        _authState.value = User.fromJson(model.toJson());
+        final record = event.model as RecordModel;
+        _authState.value = UserPocketBase.fromRecordModel(record);
       }
     });
   }

@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'auth_state_changes_provider.g.dart';
 
 @Riverpod(keepAlive: true)
-Stream<User?> authStateChanges(AuthStateChangesRef ref) {
+Stream<UserModel?> authStateChanges(AuthStateChangesRef ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return authRepository.authStateChanges();
 }

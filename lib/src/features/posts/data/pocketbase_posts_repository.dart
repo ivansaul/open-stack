@@ -12,7 +12,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 class PocketbasePostsRepository implements PostsRepository {
   final PocketBase _pb;
-  final User? _currentUser;
+  final UserModel? _currentUser;
 
   final _posts = InMemoryStore<List<PostModel>>([]);
 
