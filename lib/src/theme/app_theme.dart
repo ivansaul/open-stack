@@ -23,12 +23,13 @@ class AppTheme {
       brandBackground:
           light ? const Color(0xffFFFFFF) : const Color(0xff0E1217),
       greyGrey50: light ? const Color(0xffF4F5FD) : const Color(0xff282828),
-      greyGrey100: light ? const Color(0xffF1F2F3) : const Color(0xff1A1E25),
+      greyGrey100: light ? const Color(0xffF1F2F3) : const Color(0xff252A32),
       greyGrey150: light ? const Color(0xffF1F2F3) : const Color(0xff1A1C28),
       greyGrey200: light ? const Color(0xffD9D9D9) : const Color(0xff2C323C),
-      greyGrey250: light ? const Color(0xffDCDDE0) : const Color(0xffE5E5E5),
+      greyGrey250: light ? const Color(0xffDCDDE0) : const Color(0xff363C47),
       generalGreen: light ? const Color(0xff15CE5C) : const Color(0xff39E58C),
       generalRed: light ? const Color(0xffC72017) : const Color(0xffE04337),
+      generalOrange: light ? const Color(0xffFA6620) : const Color(0xffFF8E3B),
     );
   }
 
@@ -69,10 +70,15 @@ class AppTheme {
       heading1Bold: _heading(1).tsBold(),
       heading2Bold: _heading(2).tsBold(),
       heading3Bold: _heading(3).tsBold(),
+      heading3SemiBold: _heading(3).tsSemibold(),
+      heading3Medium: _heading(3).tsMedium(),
       button1SemiBold: _button(1).tsSemibold(),
       button2SemiBold: _button(2).tsSemibold(),
+      body1Bold: _body(Body.b1).tsBold(),
+      body1Semibold: _body(Body.b1).tsSemibold(),
       body1Medium: _body(Body.b1).tsMedium(),
       body1Regular: _body(Body.b1).tsRegular(),
+      body2Semibold: _body(Body.b2).tsSemibold(),
       body2Medium: _body(Body.b2).tsMedium(),
       body2Regular: _body(Body.b2).tsRegular(),
       bodyCaptionSemiBold: _body(Body.bC).tsSemibold(),
@@ -87,6 +93,17 @@ class AppTheme {
       fontFamily: GoogleFonts.roboto().fontFamily,
     ).copyWith(
       colorScheme: light ? const ColorScheme.light() : const ColorScheme.dark(),
+      iconTheme: IconThemeData(
+        color: _appColors.brandBlueDeep,
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          // iconSize: const MaterialStatePropertyAll(20), // TODO: improve
+          iconColor: MaterialStatePropertyAll(
+            _appColors.brandBlueDeep,
+          ),
+        ),
+      ),
       extensions: [
         _appColors,
         _textTheme,

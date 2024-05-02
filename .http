@@ -46,3 +46,7 @@ Authorization: {{adminAuthToken}}
 {
     "title": "Test product1"
 }
+
+
+### Votes
+GET {{baseUrl}}/api/collections/votes/records
