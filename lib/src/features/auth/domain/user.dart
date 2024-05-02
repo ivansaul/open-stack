@@ -1,17 +1,23 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 
-part 'user.freezed.dart';
-part 'user.g.dart';
+part 'user.mapper.dart';
 
-@freezed
-class User with _$User {
-  factory User({
-    required String id,
-    required String email,
-    required String name,
-    required String username,
-    String? avatar,
-  }) = _User;
+@MappableClass(discriminatorKey: 'type')
+abstract class UserModel with UserModelMappable {
+  final String? id;
+  final String? email;
+  final String? name;
+  final String? username;
+  final String? avatar;
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  UserModel({
+    this.id,
+    this.email,
+    this.name,
+    this.username,
+    this.avatar,
+  });
+
+  static const fromMap = UserModelMapper.fromMap;
+  static const fromJson = UserModelMapper.fromJson;
 }

@@ -16,6 +16,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 
   final Color generalGreen;
   final Color generalRed;
+  final Color generalOrange;
 
   const AppColorsExtension({
     required this.brandBlack,
@@ -29,6 +30,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.greyGrey250,
     required this.generalGreen,
     required this.generalRed,
+    required this.generalOrange,
   });
 
   @override
@@ -50,6 +52,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       greyGrey250: Color.lerp(greyGrey250, other.greyGrey250, t)!,
       generalGreen: Color.lerp(generalGreen, other.generalGreen, t)!,
       generalRed: Color.lerp(generalRed, other.generalRed, t)!,
+      generalOrange: Color.lerp(generalOrange, other.generalOrange, t)!,
     );
   }
 
@@ -66,6 +69,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? greyGrey250,
     Color? generalGreen,
     Color? generalRed,
+    Color? generalOrange,
   }) {
     return AppColorsExtension(
       brandBlack: brandBlack ?? this.brandBlack,
@@ -79,6 +83,7 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       greyGrey250: greyGrey250 ?? this.greyGrey250,
       generalGreen: generalGreen ?? this.generalGreen,
       generalRed: generalRed ?? this.generalRed,
+      generalOrange: generalOrange ?? this.generalOrange,
     );
   }
 }

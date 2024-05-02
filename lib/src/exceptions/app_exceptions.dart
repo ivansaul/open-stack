@@ -13,3 +13,16 @@ enum AuthException {
   final String message;
   const AuthException(this.message);
 }
+
+enum ExceptionPosts {
+  unknownServerError(
+    'Internal server error occurred. Please try again later.',
+  ),
+  unknown(
+    'Unknown error occurred. Please try again later.',
+  ),
+  ;
+
+  final String message;
+  const ExceptionPosts(this.message);
+}

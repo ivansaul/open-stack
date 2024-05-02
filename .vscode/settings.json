@@ -8,17 +8,21 @@
     "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
         "pubspec.yaml": "pubspec.lock,pubspec_overrides.yaml,.packages,.flutter-plugins,.flutter-plugins-dependencies,.metadata",
-        "*.dart": "${capture}.g.dart, ${capture}.freezed.dart",
+        "*.dart": "${capture}.g.dart, ${capture}.freezed.dart, ${capture}.mapper.dart",
     },
     "cSpell.words": [
+        "COCOAPODS",
         "cupertino",
+        "darwin",
         "fluttericon",
         "fontello",
         "lerp",
         "openstack",
         "pocketbase",
+        "PODFILE",
         "pubspec",
         "roboto",
-        "rxdart"
+        "rxdart",
+        "sublist"
     ],
 }

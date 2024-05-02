@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:openstack/src/features/auth/data/auth_repository_provider.dart';
 import 'package:openstack/src/features/auth/presentation/providers/auth_state_changes_provider.dart';
 import 'package:openstack/src/features/auth/presentation/screens/login_screen.dart';
-import 'package:openstack/src/features/home_screen.dart';
+import 'package:openstack/src/features/posts/presentation/screens/home_screen.dart';
+import 'package:openstack/src/features/posts/presentation/screens/post_detail_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
@@ -11,7 +12,7 @@ part 'app_router.g.dart';
 enum AppRoute {
   home('/'),
   login('/login'),
-  ;
+  postDetail('/post-detail');
 
   final String path;
   const AppRoute(this.path);
@@ -36,7 +37,15 @@ GoRouter appRouter(AppRouterRef ref) {
         path: AppRoute.login.path,
         name: AppRoute.login.name,
         builder: (context, state) => const LoginScreen(),
-      )
+      ),
+      GoRoute(
+        path: '${AppRoute.postDetail.path}:postId',
+        name: AppRoute.postDetail.name,
+        builder: (context, state) {
+          final postId = state.pathParameters['postId']!;
+          return PostDetailScreen(postId: postId);
+        },
+      ),
     ],
     redirect: (context, state) {
       final isLoggedIn = currentUser != null;

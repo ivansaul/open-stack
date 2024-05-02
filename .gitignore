@@ -1,6 +1,7 @@
 # Custom ignore list
 *.g.dart
 *.freezed.dart
+*.mapper.dart
 .backend/
 .env
 
