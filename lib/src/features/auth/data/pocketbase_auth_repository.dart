@@ -41,7 +41,6 @@ class PocketBaseAuthRepository implements AuthRepository {
   AuthEither logout() async {
     _pb.authStore.clear();
     _authState.value = null;
-    _authState.close();
     return const Right(null);
   }
 
