@@ -75,4 +75,36 @@ class AppIcons {
       IconData(0xe818, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData like_outline =
       IconData(0xe819, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData settings_2_outline =
+      IconData(0xe81a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData settings_2_bold =
+      IconData(0xe81b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData edit_2_outline =
+      IconData(0xe81c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData edit_2_bold =
+      IconData(0xe81d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData logout_outline =
+      IconData(0xe81e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData logout_bold =
+      IconData(0xe81f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData category_outline =
+      IconData(0xe820, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData category_bold =
+      IconData(0xe821, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData link_outline =
+      IconData(0xe822, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData link_bold =
+      IconData(0xe823, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData code_outline =
+      IconData(0xe824, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData code_bold =
+      IconData(0xe825, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData messages_outline =
+      IconData(0xe826, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData messages_bold =
+      IconData(0xe827, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData document_text_bold =
+      IconData(0xe828, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData document_text_outline =
+      IconData(0xe829, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }
