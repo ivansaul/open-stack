@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:openstack/src/features/auth/data/auth_repository_provider.dart';
 import 'package:openstack/src/features/posts/data/posts_repository_provider.dart';
 import 'package:openstack/src/features/posts/domain/post.dart';
 import 'package:openstack/src/features/posts/presentation/controllers/post_controller.dart';
@@ -67,13 +66,6 @@ class _ScaffoldView extends ConsumerWidget {
             );
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ref.read(authRepositoryProvider).logout();
-        },
-        tooltip: 'Logout',
-        child: const Icon(Icons.logout),
       ),
     );
   }
