@@ -44,11 +44,13 @@ class PocketBaseAuthRepository implements AuthRepository {
     return const Right(null);
   }
 
-  void _onAuthStateChanges() {
+  void _onAuthStateChanges() async {
     // Initial emission
     if (_pb.authStore.isValid) {
-      final record = _pb.authStore.model as RecordModel;
-      _authState.value = UserPocketBase.fromRecordModel(record);
+      final authData = await _pb.collection('users').authRefresh();
+      final record = authData.record;
+      _authState.value =
+          record == null ? null : UserPocketBase.fromRecordModel(record);
     }
     // Stream that gets triggered on [save()] and [clear()]
     _pb.authStore.onChange.listen((event) {
@@ -58,6 +60,14 @@ class PocketBaseAuthRepository implements AuthRepository {
         final record = event.model as RecordModel;
         _authState.value = UserPocketBase.fromRecordModel(record);
       }
+    });
+
+    // Subscription to any current user changes
+    _pb.collection('users').subscribe('*', (event) {
+      final record = event.record;
+
+      _authState.value =
+          record == null ? null : UserPocketBase.fromRecordModel(record);
     });
   }
 }
