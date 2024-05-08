@@ -9,6 +9,7 @@ abstract class UserModel with UserModelMappable {
   final String? name;
   final String? username;
   final String? avatar;
+  final String? bio;
 
   UserModel({
     this.id,
@@ -16,6 +17,7 @@ abstract class UserModel with UserModelMappable {
     this.name,
     this.username,
     this.avatar,
+    this.bio,
   });
 
   static const fromMap = UserModelMapper.fromMap;

@@ -17,6 +17,7 @@ class UserPocketBase extends UserModel with UserPocketBaseMappable {
     @MappableField(key: 'name') String? name,
     @MappableField(key: 'username') String? username,
     @MappableField(key: 'avatar') String? avatar,
+    @MappableField(key: 'bio') String? bio,
     String? collectionName,
     String? collectionId,
   }) : super(
@@ -25,6 +26,7 @@ class UserPocketBase extends UserModel with UserPocketBaseMappable {
           name: name,
           username: username,
           avatar: avatar,
+          bio: bio,
         );
 
   static const fromMap = UserPocketBaseMapper.fromMap;
@@ -37,6 +39,7 @@ class UserPocketBase extends UserModel with UserPocketBaseMappable {
     final name = record.getStringValue('name');
     final username = record.getStringValue('username');
     final avatar = record.getStringValue('avatar');
+    final bio = record.getStringValue('bio');
     final collectionName = record.collectionName;
 
     final avatarUrl = avatar.isEmpty
@@ -49,6 +52,7 @@ class UserPocketBase extends UserModel with UserPocketBaseMappable {
       name: name.isEmpty ? null : name,
       username: username.isEmpty ? null : username,
       avatar: avatarUrl,
+      bio: bio.isEmpty ? null : bio,
     );
     return user;
   }
