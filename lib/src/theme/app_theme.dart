@@ -104,6 +104,14 @@ class AppTheme {
           ),
         ),
       ),
+      scaffoldBackgroundColor: _appColors.brandBackground,
+      appBarTheme: AppBarTheme(
+        backgroundColor: _appColors.brandBackground,
+        scrolledUnderElevation: 0,
+      ),
+      dividerTheme: DividerThemeData(
+        color: _appColors.brandBlueDeep,
+      ),
       extensions: [
         _appColors,
         _textTheme,
