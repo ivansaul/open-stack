@@ -1,29 +1,22 @@
 import 'package:openstack/src/features/auth/data/auth_repository_provider.dart';
-import 'package:openstack/src/features/auth/domain/login_form.dart';
-import 'package:openstack/src/features/auth/presentation/providers/login_form_group_provider.dart';
 import 'package:openstack/src/utils/app_toast.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'login_controller.g.dart';
+part 'logout_controller.g.dart';
 
-@Riverpod(keepAlive: true)
-class LoginController extends _$LoginController {
+@riverpod
+class LogoutController extends _$LogoutController {
   @override
   FutureOr<void> build() {
     // Do nothing
   }
 
-  void loginWithEmailPassword() async {
+  void logout() async {
     final authRepository = ref.read(authRepositoryProvider);
-    final loginFormGroup = ref.read(loginFormGroupProvider);
-    final form = LoginForm.fromJson(loginFormGroup.value);
 
     state = const AsyncValue.loading();
 
-    final resEither = await authRepository.loginWithEmailPassword(
-      form.email,
-      form.password,
-    );
+    final resEither = await authRepository.logout();
 
     state = resEither.match(
       (error) => AsyncError(error, StackTrace.current),

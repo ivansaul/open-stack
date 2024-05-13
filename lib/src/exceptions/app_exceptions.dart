@@ -26,3 +26,16 @@ enum ExceptionPosts {
   final String message;
   const ExceptionPosts(this.message);
 }
+
+enum ExceptionProfile {
+  unknownServerError(
+    'Internal server error occurred. Please try again later.',
+  ),
+  unknown(
+    'Unknown error occurred. Please try again later.',
+  ),
+  ;
+
+  final String message;
+  const ExceptionProfile(this.message);
+}
