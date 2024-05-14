@@ -43,6 +43,8 @@ class _ScaffoldView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final reactionsInfo =
         ref.watch(watchPostReactionsInfoProvider(post.id)).valueOrNull;
+    final bookmarksInfo =
+        ref.watch(watchPostBookmarksInfoProvider(post.id)).valueOrNull;
     return Scaffold(
       backgroundColor: context.colors.brandBackground,
       appBar: const _AppBarView(),
@@ -118,11 +120,12 @@ class _ScaffoldView extends ConsumerWidget {
                     onPressed: () {},
                   ),
                   FilledIconCountButton(
-                    isSelected: false,
+                    isSelected: bookmarksInfo?.isBookmarked ?? false,
                     icon: AppIcons.archive_outline,
                     selectedIconColor: context.colors.generalOrange,
                     selectedIcon: AppIcons.archive_bold,
-                    onPressed: () {},
+                    onPressed: () =>
+                        onTapBookmarkIcon(ref, bookmarksInfo?.isBookmarked),
                   ),
                   FilledIconCountButton(
                     icon: AppIcons.send_2_outline,
@@ -154,6 +157,19 @@ class _ScaffoldView extends ConsumerWidget {
           postId: postId,
           reactionType: reactionType,
         );
+  }
+
+  void onTapBookmarkIcon(WidgetRef ref, bool? isBookmarked) {
+    if (isBookmarked == null) return;
+    if (isBookmarked) {
+      ref.read(postControllerProvider.notifier).deleteBookmark(
+            postId: post.id,
+          );
+    } else {
+      ref.read(postControllerProvider.notifier).addBookmark(
+            postId: post.id,
+          );
+    }
   }
 }
 

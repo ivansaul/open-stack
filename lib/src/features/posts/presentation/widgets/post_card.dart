@@ -132,6 +132,8 @@ class _ButtonsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final reactionsInfo =
         ref.watch(watchPostReactionsInfoProvider(post.id)).valueOrNull;
+    final bookmarksInfo =
+        ref.watch(watchPostBookmarksInfoProvider(post.id)).valueOrNull;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,11 +171,11 @@ class _ButtonsView extends ConsumerWidget {
           onPressed: () => onTapIconComment(ref),
         ),
         FilledIconCountButton(
-          isSelected: false,
+          isSelected: bookmarksInfo?.isBookmarked ?? false,
           icon: AppIcons.archive_outline,
           selectedIconColor: context.colors.generalOrange,
           selectedIcon: AppIcons.archive_bold,
-          onPressed: () {},
+          onPressed: () => onTapBookmarkIcon(ref, bookmarksInfo?.isBookmarked),
         ),
         FilledIconCountButton(
           icon: AppIcons.send_2_outline,
@@ -194,5 +196,18 @@ class _ButtonsView extends ConsumerWidget {
     ref.read(postControllerProvider.notifier).onTapCard(
           postId: post.id,
         );
+  }
+
+  void onTapBookmarkIcon(WidgetRef ref, bool? isBookmarked) {
+    if (isBookmarked == null) return;
+    if (isBookmarked) {
+      ref.read(postControllerProvider.notifier).deleteBookmark(
+            postId: post.id,
+          );
+    } else {
+      ref.read(postControllerProvider.notifier).addBookmark(
+            postId: post.id,
+          );
+    }
   }
 }

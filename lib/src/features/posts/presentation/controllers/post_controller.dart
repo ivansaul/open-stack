@@ -43,6 +43,60 @@ class PostController extends _$PostController {
     );
   }
 
+  Future<void> addBookmark({
+    required String postId,
+  }) async {
+    final postsRepository = ref.read(postsRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+
+    final currentUser = authRepository.currentUser;
+
+    if (currentUser == null) return;
+
+    state = const AsyncValue.loading();
+
+    final resEither = await postsRepository.addBookmark(
+      postId: postId,
+    );
+
+    state = resEither.match(
+      (l) => AsyncValue.error(l, StackTrace.current),
+      (r) => const AsyncValue.data(null),
+    );
+
+    resEither.match(
+      (l) => AppToast.showNotification(l.message),
+      (r) => null,
+    );
+  }
+
+  Future<void> deleteBookmark({
+    required String postId,
+  }) async {
+    final postsRepository = ref.read(postsRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+
+    final currentUser = authRepository.currentUser;
+
+    if (currentUser == null) return;
+
+    state = const AsyncValue.loading();
+
+    final resEither = await postsRepository.deleteBookmark(
+      postId: postId,
+    );
+
+    state = resEither.match(
+      (l) => AsyncValue.error(l, StackTrace.current),
+      (r) => const AsyncValue.data(null),
+    );
+
+    resEither.match(
+      (l) => AppToast.showNotification(l.message),
+      (r) => null,
+    );
+  }
+
   void onTapCard({required String postId}) async {
     final appRouter = ref.read(appRouterProvider);
 

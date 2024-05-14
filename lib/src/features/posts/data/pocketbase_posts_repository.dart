@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:fpdart/fpdart.dart';
 import 'package:openstack/src/exceptions/app_exceptions.dart';
 import 'package:openstack/src/features/posts/data/posts_repository.dart';
+import 'package:openstack/src/features/posts/domain/bookmark_model.dart';
+import 'package:openstack/src/features/posts/domain/bookmarks_info.dart';
 import 'package:openstack/src/features/posts/domain/post_model.dart';
 import 'package:openstack/src/features/posts/domain/post_model_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
@@ -188,5 +190,85 @@ class PocketbasePostsRepository implements PostsRepository {
       // TODO: handle errors
       return const Left(ExceptionPosts.unknownServerError);
     }
+  }
+
+  @override
+  EitherPost<void> addBookmark({
+    required String postId,
+  }) async {
+    try {
+      final body = <String, dynamic>{
+        "profile_id": _userId,
+        "post_id": postId,
+      };
+      await _pb.collection('bookmarks').create(body: body);
+      return const Right(null);
+    } catch (e) {
+      return const Left(ExceptionPosts.unknown);
+    }
+  }
+
+  @override
+  EitherPost<void> deleteBookmark({
+    required String postId,
+  }) async {
+    try {
+      final record = await _pb.collection('bookmarks').getFirstListItem(
+            'profile_id="$_userId" && post_id="$postId"',
+          );
+      await _pb.collection('bookmarks').delete(record.id);
+      return const Right(null);
+    } catch (e) {
+      return const Left(ExceptionPosts.unknown);
+    }
+  }
+
+  @override
+  EitherPost<BookmarksInfo> fetchBookmarksInfo({
+    required String postId,
+  }) async {
+    try {
+      final records = await _pb.collection('bookmarks').getFullList(
+            filter: 'post_id = "$postId"',
+          );
+
+      final bookmarks =
+          records.map((e) => BookmarkModel.fromJson(e.toString()));
+
+      final userBookmarks =
+          bookmarks.where((e) => e.profileId == _userId && e.postId == postId);
+
+      final bookmarksInfo = BookmarksInfo(
+        isBookmarked: userBookmarks.isNotEmpty,
+      );
+      return Right(bookmarksInfo);
+    } catch (e) {
+      // TODO: handle errors
+      return const Left(ExceptionPosts.unknownServerError);
+    }
+  }
+
+  @override
+  Stream<BookmarksInfo> watchBookmarksInfo({
+    required String postId,
+  }) {
+    final controller = StreamController<BookmarksInfo>();
+    void eventHandler() {
+      fetchBookmarksInfo(postId: postId).then((initialBookmarksEither) {
+        initialBookmarksEither.match(
+          (l) => controller.addError(l),
+          (r) => controller.add(r),
+        );
+      });
+    }
+
+    // subscribe to changes
+    eventHandler();
+    _pb.collection('bookmarks').subscribe(
+          '*',
+          filter: 'post_id = "$postId"',
+          (event) => eventHandler(),
+        );
+    return controller.stream;
   }
 }
