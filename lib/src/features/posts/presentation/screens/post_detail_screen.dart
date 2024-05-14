@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:openstack/src/features/posts/domain/post.dart';
-import 'package:openstack/src/features/posts/domain/vote.dart';
+import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/presentation/controllers/post_controller.dart';
 import 'package:openstack/src/features/posts/presentation/providers/post_providers.dart';
 import 'package:openstack/src/features/posts/presentation/widgets/comment_card.dart';
@@ -25,7 +25,6 @@ class PostDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final postAsync = ref.watch(watchPostProvider(postId));
-
     return ScaffoldAsyncValueWidget<PostModel>(
       asyncValue: postAsync,
       data: (post) => _ScaffoldView(post: post),
@@ -42,6 +41,8 @@ class _ScaffoldView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final reactionsInfo =
+        ref.watch(watchPostReactionsInfoProvider(post.id)).valueOrNull;
     return Scaffold(
       backgroundColor: context.colors.brandBackground,
       appBar: const _AppBarView(),
@@ -50,7 +51,7 @@ class _ScaffoldView extends ConsumerWidget {
         child: ListView(
           children: [
             Text(
-              post.title!,
+              post.title,
               style: context.textTheme.heading2Bold,
             ),
             const Gap(20),
@@ -61,7 +62,7 @@ class _ScaffoldView extends ConsumerWidget {
             ),
             const Gap(10),
             TagsView(
-              tags: post.tags,
+              tags: post.tags ?? [],
             ),
             const Gap(20),
             Text(
@@ -80,7 +81,7 @@ class _ScaffoldView extends ConsumerWidget {
             ),
             const Gap(20),
             Text(
-              '${post.numUpVotes} Upvotes    ${post.numComments} Comments',
+              '${reactionsInfo?.numUpVotes ?? 0} Votes    0 Comments',
               style: context.textTheme.body2Medium,
             ),
             const Gap(20),
@@ -98,35 +99,26 @@ class _ScaffoldView extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FilledIconCountButton(
-                    isSelected: post.upVoted,
+                    isSelected: reactionsInfo?.type == ReactionType.up,
                     icon: AppIcons.like_outline,
                     selectedIcon: AppIcons.like_bold,
                     selectedIconColor: context.colors.generalGreen,
-                    onPressed: () {
-                      ref.read(postControllerProvider.notifier).onVote(
-                            postId: post.id!,
-                            voteType: VoteType.up,
-                          );
-                    },
+                    onPressed: () => onReaction(ref, post.id, ReactionType.up),
                   ),
                   FilledIconCountButton(
-                    isSelected: post.downVoted,
+                    isSelected: reactionsInfo?.type == ReactionType.down,
                     icon: AppIcons.dislike_outline,
                     selectedIcon: AppIcons.dislike_bold,
                     selectedIconColor: context.colors.generalRed,
-                    onPressed: () {
-                      ref.read(postControllerProvider.notifier).onVote(
-                            postId: post.id!,
-                            voteType: VoteType.down,
-                          );
-                    },
+                    onPressed: () =>
+                        onReaction(ref, post.id, ReactionType.down),
                   ),
                   FilledIconCountButton(
                     icon: AppIcons.message_outline,
                     onPressed: () {},
                   ),
                   FilledIconCountButton(
-                    isSelected: post.bookmarked,
+                    isSelected: false,
                     icon: AppIcons.archive_outline,
                     selectedIconColor: context.colors.generalOrange,
                     selectedIcon: AppIcons.archive_bold,
@@ -155,6 +147,13 @@ class _ScaffoldView extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void onReaction(WidgetRef ref, String postId, ReactionType reactionType) {
+    ref.read(postControllerProvider.notifier).onReaction(
+          postId: postId,
+          reactionType: reactionType,
+        );
   }
 }
 

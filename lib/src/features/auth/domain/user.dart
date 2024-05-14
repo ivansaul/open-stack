@@ -4,7 +4,7 @@ part 'user.mapper.dart';
 
 @MappableClass(discriminatorKey: 'type')
 abstract class UserModel with UserModelMappable {
-  final String? id;
+  final String id;
   final String? email;
   final String? name;
   final String? username;
@@ -12,7 +12,7 @@ abstract class UserModel with UserModelMappable {
   final String? bio;
 
   UserModel({
-    this.id,
+    required this.id,
     this.email,
     this.name,
     this.username,

@@ -26,12 +26,12 @@ class PocketBaseProfileRepository implements ProfileRepository {
 
   @override
   EitherProfile updateProfile({
-    required UserId userId,
+    required UserId profileId,
     required BodyMap body,
   }) async {
     try {
       final record = await _pb.collection('users').update(
-            userId,
+            profileId,
             body: body,
           );
       final user = UserPocketBase.fromRecordModel(record);

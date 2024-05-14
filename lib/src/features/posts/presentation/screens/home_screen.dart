@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:openstack/src/features/posts/data/posts_repository_provider.dart';
-import 'package:openstack/src/features/posts/domain/post.dart';
-import 'package:openstack/src/features/posts/presentation/controllers/post_controller.dart';
+import 'package:openstack/src/features/posts/domain/post_model.dart';
 import 'package:openstack/src/features/posts/presentation/providers/post_providers.dart';
 import 'package:openstack/src/features/posts/presentation/widgets/home_screen_appbar.dart';
 import 'package:openstack/src/features/posts/presentation/widgets/post_card.dart';
@@ -32,7 +31,6 @@ class _ScaffoldView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final postController = ref.watch(postControllerProvider);
     return Scaffold(
       backgroundColor: context.colors.brandBackground,
       appBar: const HomeScreenAppBar(),
@@ -47,22 +45,6 @@ class _ScaffoldView extends ConsumerWidget {
             final post = posts[index];
             return PostCard(
               post: post,
-              onTapCard: () {
-                ref
-                    .read(postControllerProvider.notifier)
-                    .goToPostDetailScreen(postId: post.id!);
-              },
-              onVote: (voteType) {
-                ref.read(postControllerProvider.notifier).onVote(
-                      postId: post.id!,
-                      voteType: voteType,
-                    );
-              },
-              onTapComment: () {
-                ref
-                    .read(postControllerProvider.notifier)
-                    .goToPostDetailScreen(postId: post.id!);
-              },
             );
           },
         ),

@@ -2,6 +2,7 @@
 @adminEmail = {{$dotenv TEST_ADMIN_EMAIL}}
 @adminPassword = {{$dotenv TEST_ADMIN_PASSWORD}}
 @adminAuthToken = {{loginAdmin.response.body.$.token}}
+@userAuthToken = {{loginUser.response.body.$.token}}
 @userEmail = {{$dotenv TEST_USER_EMAIL}}
 @userPassword = {{$dotenv TEST_USER_PASSWORD}}
 
@@ -16,18 +17,20 @@ Content-Type: application/json
     "password": "{{adminPassword}}"
 }
 
-### Get User
-@userId = 59ctbvks6ldwpc0
-GET {{baseUrl}}/api/collections/users/records/{{userId}}
+### Login as User
 
-### Login
-POST {{baseUrl}}/api/collections/users/auth-with-password HTTP/1.1
+# @name loginUser
+POST {{baseUrl}}/api/collections/users/auth-with-password
 Content-Type: application/json
 
 {
     "identity": "{{userEmail}}",
     "password": "{{userPassword}}"
 }
+
+### Get User
+@userId = 59ctbvks6ldwpc0
+GET {{baseUrl}}/api/collections/users/records/{{userId}}
 
 // Posts
 
@@ -48,5 +51,23 @@ Authorization: {{adminAuthToken}}
 }
 
 
-### Votes
-GET {{baseUrl}}/api/collections/votes/records
+### Reactions
+GET {{baseUrl}}/api/collections/reactions/records
+
+
+  ///           ///
+ /// Bookmarks ///
+///           ///
+
+### List
+GET {{baseUrl}}/api/collections/bookmarks/records
+
+### Create
+POST {{baseUrl}}/api/collections/bookmarks/records
+Content-Type: application/json
+Authorization: {{userAuthToken}}
+
+{
+    "user_id": "p9z41nh6www67rz",
+    "post_id": "0dlcr7lre4kv29p"
+}

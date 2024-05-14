@@ -23,7 +23,7 @@ class EditProfileController extends _$EditProfileController {
     state = const AsyncLoading();
 
     final resEither = await profileRepository.updateProfile(
-      userId: currentUser!.id!,
+      profileId: currentUser!.id,
       body: editProfileForm.value,
     );
 

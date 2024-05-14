@@ -6,9 +6,9 @@ import 'package:openstack/src/features/auth/domain/user.dart';
 typedef EitherProfile = Future<Either<ExceptionProfile, UserModel>>;
 
 abstract class ProfileRepository {
-  EitherProfile fetchProfile(UserId userId);
+  EitherProfile fetchProfile(String profileId);
   EitherProfile updateProfile({
-    required UserId userId,
+    required String profileId,
     required BodyMap body,
   });
 }

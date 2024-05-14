@@ -2,39 +2,52 @@ import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:openstack/src/exceptions/app_exceptions.dart';
-import 'package:openstack/src/features/auth/domain/user.dart';
 import 'package:openstack/src/features/posts/data/posts_repository.dart';
-import 'package:openstack/src/features/posts/domain/post.dart';
-import 'package:openstack/src/features/posts/domain/post_pocketbase.dart';
-import 'package:openstack/src/features/posts/domain/vote.dart';
-import 'package:openstack/src/utils/in_memory_store.dart';
+import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/post_model_pocketbase.dart';
+import 'package:openstack/src/features/posts/domain/reaction_model.dart';
+import 'package:openstack/src/features/posts/domain/reaction_model_pocketbase.dart';
+import 'package:openstack/src/features/posts/domain/reactions_info.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class PocketbasePostsRepository implements PostsRepository {
   final PocketBase _pb;
-  final UserModel? _currentUser;
 
-  final _posts = InMemoryStore<List<PostModel>>([]);
+  PocketbasePostsRepository(this._pb);
 
-  PocketbasePostsRepository(this._pb, this._currentUser) {
-    _listenPostsChanges();
+  String? get _userId => _pb.authStore.model?.id;
+
+  @override
+  Stream<List<PostModel>> watchPosts() {
+    final controller = StreamController<List<PostModel>>();
+    void eventHandler() {
+      fetchPosts().then((initialPostsEither) {
+        initialPostsEither.match(
+          (l) => controller.addError(l),
+          (r) => controller.add(r),
+        );
+      });
+    }
+
+    // subscribe to changes
+    eventHandler();
+    _pb.collection('reactions').subscribe(
+          '*',
+          (event) => eventHandler(),
+        );
+    return controller.stream;
   }
 
   @override
-  Stream<List<PostModel>> watchPosts() => _posts.stream;
-
-  @override
-  EitherPosts fetchPosts({String? filter}) async {
+  EitherPost<List<PostModel>> fetchPosts({String? filter}) async {
     try {
       final records = await _pb.collection('posts').getFullList(
             sort: '-created',
-            expand: 'author, comments_via_post.user, votes_via_post.user',
             filter: filter,
           );
 
       final posts = records
-          .map((record) =>
-              PostPocketBase.fromRecordModel(record, _currentUser?.id))
+          .map((record) => PostModelPocketBase.fromRecordModel(record))
           .toList();
 
       return Right(posts);
@@ -42,25 +55,26 @@ class PocketbasePostsRepository implements PostsRepository {
       if (e is ClientException) {
         return const Left(ExceptionPosts.unknownServerError);
       }
+      // TODO: handle errors
       return const Left(ExceptionPosts.unknown);
     }
   }
 
   @override
-  EitherPost fetchPost({required String postId}) async {
+  EitherPost<PostModel> fetchPost({required String postId}) async {
     try {
       final record = await _pb.collection('posts').getOne(
             postId,
-            expand: 'author, comments_via_post.user, votes_via_post.user',
           );
 
-      final post = PostPocketBase.fromRecordModel(record, _currentUser?.id);
+      final post = PostModelPocketBase.fromRecordModel(record);
 
       return Right(post);
     } catch (e) {
       if (e is ClientException) {
         return const Left(ExceptionPosts.unknownServerError);
       }
+      // TODO: handle errors
       return const Left(ExceptionPosts.unknown);
     }
   }
@@ -68,128 +82,111 @@ class PocketbasePostsRepository implements PostsRepository {
   @override
   Stream<PostModel> watchPost({required String postId}) {
     final controller = StreamController<PostModel>();
-    fetchPost(postId: postId).then((initialPostEither) {
-      initialPostEither.match(
-        (l) => controller.addError(l),
-        (r) => controller.add(r),
-      );
-    });
+    void eventHandler() {
+      fetchPost(postId: postId).then((initialPostEither) {
+        initialPostEither.match(
+          (l) => controller.addError(l),
+          (r) => controller.add(r),
+        );
+      });
+    }
 
+    // subscribe to changes
+    eventHandler();
     _pb.collection('posts').subscribe(
-      postId,
-      (event) async {
-        final record = event.record;
-
-        if (record == null) return;
-
-        fetchPost(postId: postId).then((initialPostEither) {
-          initialPostEither.match(
-            (l) => controller.addError(l),
-            (r) => controller.add(r),
-          );
-        });
-      },
-    );
-
-    _pb.collection('votes').subscribe(
-      '*',
-      filter: 'post = "$postId" && user = "${_currentUser?.id}"',
-      (event) async {
-        final record = event.record;
-
-        if (record == null) return;
-
-        fetchPost(postId: postId).then((initialPostEither) {
-          initialPostEither.match(
-            (l) => controller.addError(l),
-            (r) => controller.add(r),
-          );
-        });
-      },
-    );
+          postId,
+          (event) => eventHandler(),
+        );
     return controller.stream;
   }
 
   @override
-  EitherVoid votePost({
+  EitherPost<void> addReaction({
     required String postId,
-    required String userId,
-    required VoteType voteType,
+    required ReactionType reactionType,
   }) async {
-    // TODO: implement error handling
-
     try {
-      final queryResult = await _pb.collection('votes').getFullList(
-            filter: 'user="$userId" && post="$postId"',
+      final queryResult = await _pb.collection('reactions').getFullList(
+            filter: 'profile_id="$_userId" && post_id="$postId"',
           );
 
       final queryRecord = (queryResult.isEmpty) ? null : queryResult.first;
-      final currentVoteType = queryRecord?.getStringValue('type');
+      final queryReactionType = queryRecord?.getStringValue('type');
 
       final body = <String, dynamic>{
-        "post": postId,
-        "user": userId,
-        "type": voteType.name
+        "post_id": postId,
+        "profile_id": _userId,
+        "type": reactionType.name
       };
 
-      if (currentVoteType == null) {
-        await _pb.collection('votes').create(body: body);
+      if (queryReactionType == null) {
+        await _pb.collection('reactions').create(body: body);
         return const Right(null);
       }
 
-      if (voteType.name == currentVoteType) {
-        await _pb.collection('votes').delete(queryRecord!.id);
+      if (reactionType.name == queryReactionType) {
+        await _pb.collection('reactions').delete(queryRecord!.id);
         return const Right(null);
       }
 
-      if (voteType.name != currentVoteType) {
-        await _pb.collection('votes').update(queryRecord!.id, body: body);
+      if (reactionType.name != queryReactionType) {
+        await _pb.collection('reactions').update(queryRecord!.id, body: body);
       }
       return const Right(null);
     } catch (e) {
+      // TODO: handle errors
       return const Left(ExceptionPosts.unknownServerError);
     }
   }
 
-  void _listenPostsChanges() async {
-    final initialPostsEither = await fetchPosts();
-    final initialPosts = initialPostsEither.match(
-      (l) => <PostModel>[],
-      (r) => r,
-    );
-
-    _posts.value = initialPosts;
-
-    _pb.collection('posts').subscribe(
-      '*',
-      expand: "author, comments_via_post.user, votes_via_post",
-      filter: _filters.posts,
-      (event) async {
-        print("[posts] ${event.action}");
-        // print(event.record);
-        final updatedPostsEither = await fetchPosts(filter: _filters.posts);
-        final updatedPosts = updatedPostsEither.match(
-          (l) => <PostModel>[],
-          (r) => r,
+  @override
+  Stream<ReactionsInfo> watchReactionsInfo({required String postId}) {
+    final controller = StreamController<ReactionsInfo>();
+    void eventHandler() {
+      fetchReactionsInfo(postId: postId).then((initialReactionsEither) {
+        initialReactionsEither.match(
+          (l) => controller.addError(l),
+          (r) => controller.add(r),
         );
-        _posts.value = updatedPosts;
-      },
-    );
+      });
+    }
 
-    _pb.collection('votes').subscribe('*', filter: _filters.votes,
-        (event) async {
-      print("[votes] ${event.action}");
-      final updatedPostsEither = await fetchPosts(filter: _filters.posts);
-      final updatedPosts = updatedPostsEither.match(
-        (l) => <PostModel>[],
-        (r) => r,
-      );
-      _posts.value = updatedPosts;
-    });
+    // subscribe to changes
+    eventHandler();
+    _pb.collection('reactions').subscribe(
+          '*',
+          filter: 'post_id = "$postId"',
+          (event) => eventHandler(),
+        );
+    return controller.stream;
   }
 
-  ({String posts, String votes}) get _filters => (
-        posts: _posts.value.map((post) => 'id = "${post.id}"').join(' || '),
-        votes: _posts.value.map((post) => 'post = "${post.id}"').join(' || '),
+  @override
+  EitherPost<ReactionsInfo> fetchReactionsInfo({
+    required String postId,
+  }) async {
+    try {
+      final records = await _pb.collection('reactions').getFullList(
+            filter: 'post_id = "$postId"',
+          );
+
+      final reactions =
+          records.map((e) => ReactionModelPocketBase.fromRecordModel(e));
+
+      final upVotedReactions =
+          reactions.where((e) => e.type == ReactionType.up);
+
+      final userReactions =
+          reactions.where((e) => e.profileId == _userId && e.postId == postId);
+
+      final reactionsInfo = ReactionsInfo(
+        numUpVotes: upVotedReactions.length,
+        type: userReactions.isEmpty ? null : userReactions.first.type,
       );
+      return Right(reactionsInfo);
+    } catch (e) {
+      // TODO: handle errors
+      return const Left(ExceptionPosts.unknownServerError);
+    }
+  }
 }

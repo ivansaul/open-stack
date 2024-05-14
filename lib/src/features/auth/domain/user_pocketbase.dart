@@ -12,14 +12,12 @@ part 'user_pocketbase.mapper.dart';
 @MappableClass()
 class UserPocketBase extends UserModel with UserPocketBaseMappable {
   UserPocketBase({
-    @MappableField(key: 'id') String? id,
+    @MappableField(key: 'id') required String id,
     @MappableField(key: 'email') String? email,
     @MappableField(key: 'name') String? name,
     @MappableField(key: 'username') String? username,
     @MappableField(key: 'avatar') String? avatar,
     @MappableField(key: 'bio') String? bio,
-    String? collectionName,
-    String? collectionId,
   }) : super(
           id: id,
           email: email,

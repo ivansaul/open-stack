@@ -1,6 +1,6 @@
 import 'package:openstack/src/features/auth/data/auth_repository_provider.dart';
 import 'package:openstack/src/features/posts/data/posts_repository_provider.dart';
-import 'package:openstack/src/features/posts/domain/vote.dart';
+import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/router/app_router.dart';
 import 'package:openstack/src/utils/app_toast.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,9 +14,9 @@ class PostController extends _$PostController {
     // Do nothing
   }
 
-  Future<void> onVote({
+  Future<void> onReaction({
     required String postId,
-    required VoteType voteType,
+    required ReactionType reactionType,
   }) async {
     final postsRepository = ref.read(postsRepositoryProvider);
     final authRepository = ref.read(authRepositoryProvider);
@@ -27,10 +27,9 @@ class PostController extends _$PostController {
 
     state = const AsyncValue.loading();
 
-    final resEither = await postsRepository.votePost(
+    final resEither = await postsRepository.addReaction(
       postId: postId,
-      userId: currentUser.id!,
-      voteType: voteType,
+      reactionType: reactionType,
     );
 
     state = resEither.match(
@@ -44,7 +43,7 @@ class PostController extends _$PostController {
     );
   }
 
-  void goToPostDetailScreen({required String postId}) async {
+  void onTapCard({required String postId}) async {
     final appRouter = ref.read(appRouterProvider);
 
     state = const AsyncValue.loading();
