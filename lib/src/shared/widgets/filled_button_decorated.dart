@@ -14,6 +14,7 @@ class FilledButtonDecorated extends StatelessWidget {
     this.height = 45,
     this.borderRadius = 15,
     this.isLoading = false,
+    this.loadingIconSize = 20,
   });
 
   final String title;
@@ -24,6 +25,7 @@ class FilledButtonDecorated extends StatelessWidget {
   final double? height;
   final double borderRadius;
   final bool isLoading;
+  final double loadingIconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,7 @@ class FilledButtonDecorated extends StatelessWidget {
         width: width,
         height: height,
         child: isLoading
-            ? const LoadingDots()
+            ? LoadingDots(height: loadingIconSize)
             : Text(
                 title,
                 style: style ??
