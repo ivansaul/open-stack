@@ -55,3 +55,12 @@ Stream<BookmarksInfo> watchPostBookmarksInfo(
   final postRepository = ref.watch(postsRepositoryProvider);
   return postRepository.watchBookmarksInfo(postId: postId);
 }
+
+@riverpod
+String? getPostThumbnailUrl(
+  GetPostThumbnailUrlRef ref,
+  PostModel postModel,
+) {
+  final postsRepository = ref.watch(postsRepositoryProvider);
+  return postsRepository.getPostThumbnailUrl(postModel);
+}

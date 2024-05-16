@@ -4,7 +4,6 @@ import 'package:openstack/src/exceptions/app_exceptions.dart';
 import 'package:openstack/src/features/auth/domain/user.dart';
 import 'package:openstack/src/features/auth/domain/user_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/post_model.dart';
-import 'package:openstack/src/features/posts/domain/post_model_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/profile/data/profile_repository.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -57,7 +56,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
           );
 
       final posts = records
-          .map((record) => PostModelPocketBase.fromRecordModel(record))
+          .map((record) => PostModel.fromJson(record.toString()))
           .toList();
 
       return Right(posts);
@@ -81,7 +80,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
 
       final posts = records.map((record) {
         final postRecord = record.expand['post_id']!.first;
-        return PostModelPocketBase.fromRecordModel(postRecord);
+        return PostModel.fromJson(postRecord.toString());
       }).toList();
 
       return Right(posts);
@@ -105,7 +104,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
 
       final posts = records.map((record) {
         final postRecord = record.expand['post_id']!.first;
-        return PostModelPocketBase.fromRecordModel(postRecord);
+        return PostModel.fromJson(postRecord.toString());
       }).toList();
 
       return Right(posts);

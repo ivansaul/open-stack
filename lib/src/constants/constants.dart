@@ -16,6 +16,9 @@ class Constants {
   static const String assetsDefaultAvatar = 'https://i.imgur.com/OozHpeP.png';
   static const String assetsDefaultProfileCover =
       'https://i.imgur.com/dzyie6N.png';
+  static const String assetsDefaultThumbnail =
+      'https://i.imgur.com/54h2ZiE.png';
+
   // API
   static String apiBaseUrl = Env.apiBaseUrl;
 

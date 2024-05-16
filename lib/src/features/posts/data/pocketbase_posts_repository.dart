@@ -6,7 +6,6 @@ import 'package:openstack/src/features/posts/data/posts_repository.dart';
 import 'package:openstack/src/features/posts/domain/bookmark_model.dart';
 import 'package:openstack/src/features/posts/domain/bookmarks_info.dart';
 import 'package:openstack/src/features/posts/domain/post_model.dart';
-import 'package:openstack/src/features/posts/domain/post_model_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/reactions_info.dart';
@@ -18,6 +17,17 @@ class PocketbasePostsRepository implements PostsRepository {
   PocketbasePostsRepository(this._pb);
 
   String? get _userId => _pb.authStore.model?.id;
+
+  String get _postsCollection => 'posts';
+
+  @override
+  // Returns the URL for the post thumbnail
+  // [baseUrl]/api/files/COLLECTION_NAME/RECORD_ID/FILENAME
+  String? getPostThumbnailUrl(PostModel postModel) {
+    if (postModel.thumbnail == null) return null;
+    final baseUrl = '${_pb.baseUrl}/api/files';
+    return '$baseUrl/$_postsCollection/${postModel.id}/${postModel.thumbnail}';
+  }
 
   @override
   Stream<List<PostModel>> watchPosts() {
@@ -49,7 +59,7 @@ class PocketbasePostsRepository implements PostsRepository {
           );
 
       final posts = records
-          .map((record) => PostModelPocketBase.fromRecordModel(record))
+          .map((record) => PostModel.fromJson(record.toString()))
           .toList();
 
       return Right(posts);
@@ -69,7 +79,7 @@ class PocketbasePostsRepository implements PostsRepository {
             postId,
           );
 
-      final post = PostModelPocketBase.fromRecordModel(record);
+      final post = PostModel.fromJson(record.toString());
 
       return Right(post);
     } catch (e) {

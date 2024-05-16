@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:openstack/src/constants/constants.dart';
 import 'package:openstack/src/features/posts/domain/post_model.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/presentation/controllers/post_controller.dart';
@@ -45,6 +46,7 @@ class _ScaffoldView extends ConsumerWidget {
         ref.watch(watchPostReactionsInfoProvider(post.id)).valueOrNull;
     final bookmarksInfo =
         ref.watch(watchPostBookmarksInfoProvider(post.id)).valueOrNull;
+    final postThumbnailUrl = ref.watch(getPostThumbnailUrlProvider(post));
     return Scaffold(
       backgroundColor: context.colors.brandBackground,
       appBar: const _AppBarView(),
@@ -75,7 +77,7 @@ class _ScaffoldView extends ConsumerWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.network(
-                post.image!,
+                postThumbnailUrl ?? Constants.assetsDefaultThumbnail,
                 fit: BoxFit.cover,
                 height: 200,
                 width: double.infinity,

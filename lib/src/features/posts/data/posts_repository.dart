@@ -12,6 +12,10 @@ abstract class PostsRepository {
     required String postId,
   });
 
+  String? getPostThumbnailUrl(
+    PostModel post,
+  );
+
   Stream<PostModel> watchPost({
     required String postId,
   });
