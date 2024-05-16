@@ -11,6 +11,7 @@ class OutlineReactiveTextField extends HookWidget {
   final TextInputType? keyboardType;
   final Widget? prefixIcon;
   final bool obscureText;
+  final bool isDense;
 
   const OutlineReactiveTextField({
     super.key,
@@ -19,6 +20,7 @@ class OutlineReactiveTextField extends HookWidget {
     this.keyboardType,
     this.prefixIcon,
     this.obscureText = false,
+    this.isDense = true,
   });
 
   @override
@@ -31,6 +33,7 @@ class OutlineReactiveTextField extends HookWidget {
       cursorHeight: 20,
       obscuringCharacter: '●',
       decoration: InputDecoration(
+        isDense: isDense,
         filled: true,
         fillColor: context.colors.greyGrey150,
         contentPadding: const EdgeInsets.symmetric(vertical: 15),
