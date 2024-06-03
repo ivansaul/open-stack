@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:http/http.dart' as http;
+import 'package:openstack/src/constants/typedef.dart';
 import 'package:openstack/src/exceptions/app_exceptions.dart';
 import 'package:openstack/src/features/posts/data/posts_repository.dart';
 import 'package:openstack/src/features/posts/domain/bookmark_model.dart';
@@ -19,15 +21,84 @@ class PocketbasePostsRepository implements PostsRepository {
 
   String? get _userId => _pb.authStore.model?.id;
 
-  String get _postsCollection => 'posts';
+  @override
+  Future<String?> fetchFileUrl(String fileId) async {
+    try {
+      final record = await _pb.collection('storage_posts').getOne(
+            fileId,
+          );
+      final file = record.getStringValue('file');
+      final baseUrl = '${_pb.baseUrl}/api/files';
+      return '$baseUrl/storage_posts/$fileId/$file';
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
-  // Returns the URL for the post thumbnail
-  // [baseUrl]/api/files/COLLECTION_NAME/RECORD_ID/FILENAME
-  String? getPostThumbnailUrl(PostModel postModel) {
-    if (postModel.thumbnail == null) return null;
-    final baseUrl = '${_pb.baseUrl}/api/files';
-    return '$baseUrl/$_postsCollection/${postModel.id}/${postModel.thumbnail}';
+  EitherPost<void> createPost(MapDynamic data) async {
+    try {
+      // Upload the thumbnail
+      final thumbnailPath = data['thumbnail_path'] as String?;
+
+      String? thumbnailId;
+      if (thumbnailPath != null) {
+        thumbnailId = await _uploadFile(thumbnailPath);
+      }
+
+      // Create post
+      final body = <String, dynamic>{
+        'title': data['title'],
+        'summary': data['summary'],
+        'profile_id': _userId,
+        'tags': data['tags'],
+        'source_url': data['source_url'],
+        'thumbnail_id': thumbnailId,
+      };
+
+      await _pb.collection('posts').create(
+            body: body,
+          );
+      return const Right(null);
+    } catch (e) {
+      return const Left(ExceptionPosts.unknown);
+    }
+  }
+
+  @override
+  EitherPost<void> updatePost({
+    required PostEntity post,
+    required MapDynamic data,
+  }) async {
+    try {
+      // Upload the new thumbnail
+      final thumbnailPath = data['thumbnail_path'] as String?;
+
+      String? thumbnailId;
+      if (thumbnailPath != null) {
+        thumbnailId = post.thumbnailId == null
+            ? await _uploadFile(thumbnailPath)
+            : await _replaceFile(post.thumbnailId!, thumbnailPath);
+      }
+
+      // Update post
+      final body = <String, dynamic>{
+        'title': data['title'],
+        'summary': data['summary'],
+        'profile_id': _userId,
+        'tags': data['tags'],
+        'source_url': data['source_url'],
+        'thumbnail_id': thumbnailId,
+      };
+
+      await _pb.collection('posts').update(
+            post.id,
+            body: body,
+          );
+      return const Right(null);
+    } catch (e) {
+      return const Left(ExceptionPosts.unknown);
+    }
   }
 
   @override
@@ -281,5 +352,38 @@ class PocketbasePostsRepository implements PostsRepository {
           (event) => eventHandler(),
         );
     return controller.stream;
+  }
+
+  /// Upload a file to storage_posts collection and return its ID
+  Future<String> _uploadFile(String path) async {
+    final record = await _pb.collection('storage_posts').create(
+      body: {
+        'profile_id': _userId,
+      },
+      files: [
+        await http.MultipartFile.fromPath(
+          'file',
+          path,
+        ),
+      ],
+    );
+    return record.id;
+  }
+
+  // Replace file with the new one
+  Future<String> _replaceFile(String fileId, String path) async {
+    final record = await _pb.collection('storage_posts').update(
+      fileId,
+      body: {
+        'profile_id': _userId,
+      },
+      files: [
+        await http.MultipartFile.fromPath(
+          'file',
+          path,
+        ),
+      ],
+    );
+    return record.id;
   }
 }

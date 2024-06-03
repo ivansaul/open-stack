@@ -1,7 +1,8 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:openstack/src/constants/typedef.dart';
 import 'package:openstack/src/exceptions/app_exceptions.dart';
 import 'package:openstack/src/features/posts/domain/bookmarks_info.dart';
-import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/post_entity.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/domain/reactions_info.dart';
 
@@ -21,8 +22,8 @@ abstract class PostsRepository {
     required String postId,
   });
 
-  String? getPostThumbnailUrl(
-    PostModel post,
+  Future<String?> fetchFileUrl(
+    String fileId,
   );
 
   Stream<PostEntity> watchPost({

@@ -57,10 +57,10 @@ Stream<BookmarksInfo> watchPostBookmarksInfo(
 }
 
 @riverpod
-String? getPostThumbnailUrl(
-  GetPostThumbnailUrlRef ref,
-  PostModel postModel,
-) {
+Future<String?> fetchPostFileUrl(
+  FetchPostFileUrlRef ref,
+  String fileId,
+) async {
   final postsRepository = ref.watch(postsRepositoryProvider);
-  return postsRepository.getPostThumbnailUrl(postModel);
+  return await postsRepository.fetchFileUrl(fileId);
 }

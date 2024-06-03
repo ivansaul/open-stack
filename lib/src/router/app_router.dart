@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:openstack/src/features/auth/data/auth_repository_provider.dart';
 import 'package:openstack/src/features/auth/presentation/screens/login_screen.dart';
+import 'package:openstack/src/features/posts/domain/post_entity.dart';
 import 'package:openstack/src/features/posts/presentation/screens/home_screen.dart';
 import 'package:openstack/src/features/posts/presentation/screens/post_detail_screen.dart';
+import 'package:openstack/src/features/posts/presentation/screens/post_form_screen.dart';
 import 'package:openstack/src/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:openstack/src/features/profile/presentation/screens/profile_screen.dart';
 import 'package:openstack/src/features/settings/screens/settings_screen.dart';
@@ -18,6 +20,7 @@ enum AppRoute {
   home('/'),
   login('/login'),
   postDetail('/post-detail'),
+  postForm('/post-form'),
   profile('/profile'),
   settings('/settings'),
   editProfile('edit-profile'),
@@ -40,7 +43,7 @@ GoRouter appRouter(AppRouterRef ref) {
 
   return GoRouter(
     debugLogDiagnostics: false,
-    navigatorKey: _rootNavigatorKey,
+    // navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoute.home.path,
     observers: [BotToastNavigatorObserver()],
     routes: [
@@ -77,6 +80,23 @@ GoRouter appRouter(AppRouterRef ref) {
         path: AppRoute.login.path,
         name: AppRoute.login.name,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoute.postForm.path,
+        name: AppRoute.postForm.name,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          fullscreenDialog: true,
+          child: PostFormScreen(post: state.extra as PostEntity?),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 1),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+        ),
       ),
       GoRoute(
         path: '${AppRoute.postDetail.path}:postId',
