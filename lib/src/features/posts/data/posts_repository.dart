@@ -8,7 +8,16 @@ import 'package:openstack/src/features/posts/domain/reactions_info.dart';
 typedef EitherPost<T> = Future<Either<ExceptionPosts, T>>;
 
 abstract class PostsRepository {
-  EitherPost<PostModel> fetchPost({
+  EitherPost<void> createPost(
+    MapDynamic data,
+  );
+
+  EitherPost<void> updatePost({
+    required PostEntity post,
+    required MapDynamic data,
+  });
+
+  EitherPost<PostEntity> fetchPost({
     required String postId,
   });
 
@@ -16,17 +25,17 @@ abstract class PostsRepository {
     PostModel post,
   );
 
-  Stream<PostModel> watchPost({
+  Stream<PostEntity> watchPost({
     required String postId,
   });
 
   // TODO: improve parameters
-  EitherPost<List<PostModel>> fetchPosts({
+  EitherPost<List<PostEntity>> fetchPosts({
     String? filter,
   });
 
   // TODO: improve parameters
-  Stream<List<PostModel>> watchPosts();
+  Stream<List<PostEntity>> watchPosts();
 
   EitherPost<void> addReaction({
     required String postId,

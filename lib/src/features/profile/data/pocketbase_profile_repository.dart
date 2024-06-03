@@ -3,7 +3,8 @@ import 'package:openstack/src/constants/typedef.dart';
 import 'package:openstack/src/exceptions/app_exceptions.dart';
 import 'package:openstack/src/features/auth/domain/user.dart';
 import 'package:openstack/src/features/auth/domain/user_pocketbase.dart';
-import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/post_entity.dart';
+import 'package:openstack/src/features/posts/domain/post_model_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/profile/data/profile_repository.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -48,7 +49,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  EitherProfile<List<PostModel>> fetchMyPosts() async {
+  EitherProfile<List<PostEntity>> fetchMyPosts() async {
     try {
       final records = await _pb.collection('posts').getFullList(
             sort: '-created',
@@ -56,7 +57,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
           );
 
       final posts = records
-          .map((record) => PostModel.fromJson(record.toString()))
+          .map((record) => PostModelPocketBase.fromRecord(record))
           .toList();
 
       return Right(posts);
@@ -66,7 +67,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  EitherProfile<List<PostModel>> fetchMyUpVotedPosts() async {
+  EitherProfile<List<PostEntity>> fetchMyUpVotedPosts() async {
     try {
       final records = await _pb.collection('reactions').getFullList(
             sort: '-created',
@@ -80,7 +81,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
 
       final posts = records.map((record) {
         final postRecord = record.expand['post_id']!.first;
-        return PostModel.fromJson(postRecord.toString());
+        return PostModelPocketBase.fromRecord(postRecord);
       }).toList();
 
       return Right(posts);
@@ -90,7 +91,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  EitherProfile<List<PostModel>> fetchMyBookmarkedPosts() async {
+  EitherProfile<List<PostEntity>> fetchMyBookmarkedPosts() async {
     try {
       final records = await _pb.collection('bookmarks').getFullList(
             sort: '-created',
@@ -104,7 +105,7 @@ class PocketBaseProfileRepository implements ProfileRepository {
 
       final posts = records.map((record) {
         final postRecord = record.expand['post_id']!.first;
-        return PostModel.fromJson(postRecord.toString());
+        return PostModelPocketBase.fromRecord(postRecord);
       }).toList();
 
       return Right(posts);

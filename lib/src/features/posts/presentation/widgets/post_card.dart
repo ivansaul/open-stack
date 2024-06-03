@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:openstack/src/constants/constants.dart';
-import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/post_entity.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/presentation/controllers/post_controller.dart';
 import 'package:openstack/src/features/posts/presentation/providers/post_providers.dart';
@@ -19,7 +19,7 @@ class PostCard extends ConsumerWidget {
     required this.post,
   });
 
-  final PostModel post;
+  final PostEntity post;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,7 +129,7 @@ class _ButtonsView extends ConsumerWidget {
     required this.post,
   });
 
-  final PostModel post;
+  final PostEntity post;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:openstack/src/features/auth/domain/user.dart';
 import 'package:openstack/src/features/posts/data/posts_repository_provider.dart';
 import 'package:openstack/src/features/posts/domain/bookmarks_info.dart';
-import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/post_entity.dart';
 import 'package:openstack/src/features/posts/domain/reactions_info.dart';
 import 'package:openstack/src/features/profile/data/profile_repository_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,13 +11,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'post_providers.g.dart';
 
 @riverpod
-Stream<PostModel> watchPost(WatchPostRef ref, String postId) {
+Stream<PostEntity> watchPost(WatchPostRef ref, String postId) {
   final postsRepository = ref.watch(postsRepositoryProvider);
   return postsRepository.watchPost(postId: postId);
 }
 
 @riverpod
-Stream<List<PostModel>> watchPosts(WatchPostsRef ref) {
+Stream<List<PostEntity>> watchPosts(WatchPostsRef ref) {
   final postsRepository = ref.watch(postsRepositoryProvider);
   return postsRepository.watchPosts();
 }

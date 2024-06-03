@@ -5,7 +5,8 @@ import 'package:openstack/src/exceptions/app_exceptions.dart';
 import 'package:openstack/src/features/posts/data/posts_repository.dart';
 import 'package:openstack/src/features/posts/domain/bookmark_model.dart';
 import 'package:openstack/src/features/posts/domain/bookmarks_info.dart';
-import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/post_entity.dart';
+import 'package:openstack/src/features/posts/domain/post_model_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model_pocketbase.dart';
 import 'package:openstack/src/features/posts/domain/reactions_info.dart';
@@ -30,8 +31,8 @@ class PocketbasePostsRepository implements PostsRepository {
   }
 
   @override
-  Stream<List<PostModel>> watchPosts() {
-    final controller = StreamController<List<PostModel>>();
+  Stream<List<PostEntity>> watchPosts() {
+    final controller = StreamController<List<PostEntity>>();
     void eventHandler() {
       fetchPosts().then((initialPostsEither) {
         initialPostsEither.match(
@@ -51,7 +52,7 @@ class PocketbasePostsRepository implements PostsRepository {
   }
 
   @override
-  EitherPost<List<PostModel>> fetchPosts({String? filter}) async {
+  EitherPost<List<PostEntity>> fetchPosts({String? filter}) async {
     try {
       final records = await _pb.collection('posts').getFullList(
             sort: '-created',
@@ -59,7 +60,7 @@ class PocketbasePostsRepository implements PostsRepository {
           );
 
       final posts = records
-          .map((record) => PostModel.fromJson(record.toString()))
+          .map((record) => PostModelPocketBase.fromRecord(record))
           .toList();
 
       return Right(posts);
@@ -73,13 +74,13 @@ class PocketbasePostsRepository implements PostsRepository {
   }
 
   @override
-  EitherPost<PostModel> fetchPost({required String postId}) async {
+  EitherPost<PostEntity> fetchPost({required String postId}) async {
     try {
       final record = await _pb.collection('posts').getOne(
             postId,
           );
 
-      final post = PostModel.fromJson(record.toString());
+      final post = PostModelPocketBase.fromRecord(record);
 
       return Right(post);
     } catch (e) {
@@ -92,8 +93,8 @@ class PocketbasePostsRepository implements PostsRepository {
   }
 
   @override
-  Stream<PostModel> watchPost({required String postId}) {
-    final controller = StreamController<PostModel>();
+  Stream<PostEntity> watchPost({required String postId}) {
+    final controller = StreamController<PostEntity>();
     void eventHandler() {
       fetchPost(postId: postId).then((initialPostEither) {
         initialPostEither.match(

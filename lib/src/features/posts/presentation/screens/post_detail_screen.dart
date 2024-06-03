@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:openstack/src/constants/constants.dart';
-import 'package:openstack/src/features/posts/domain/post_model.dart';
+import 'package:openstack/src/features/posts/domain/post_entity.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/presentation/controllers/post_controller.dart';
 import 'package:openstack/src/features/posts/presentation/providers/post_providers.dart';
@@ -26,7 +26,7 @@ class PostDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final postAsync = ref.watch(watchPostProvider(postId));
-    return ScaffoldAsyncValueWidget<PostModel>(
+    return ScaffoldAsyncValueWidget<PostEntity>(
       asyncValue: postAsync,
       data: (post) => _ScaffoldView(post: post),
     );
@@ -34,7 +34,7 @@ class PostDetailScreen extends ConsumerWidget {
 }
 
 class _ScaffoldView extends ConsumerWidget {
-  final PostModel post;
+  final PostEntity post;
 
   const _ScaffoldView({
     required this.post,
@@ -46,7 +46,9 @@ class _ScaffoldView extends ConsumerWidget {
         ref.watch(watchPostReactionsInfoProvider(post.id)).valueOrNull;
     final bookmarksInfo =
         ref.watch(watchPostBookmarksInfoProvider(post.id)).valueOrNull;
-    final postThumbnailUrl = ref.watch(getPostThumbnailUrlProvider(post));
+    final postThumbnailUrl = post.thumbnailId == null
+        ? null
+        : ref.watch(fetchPostFileUrlProvider(post.thumbnailId!)).valueOrNull;
     return Scaffold(
       backgroundColor: context.colors.brandBackground,
       appBar: const _AppBarView(),
