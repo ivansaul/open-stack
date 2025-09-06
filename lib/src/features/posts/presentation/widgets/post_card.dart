@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 import 'package:openstack/src/constants/constants.dart';
 import 'package:openstack/src/features/posts/domain/post_entity.dart';
 import 'package:openstack/src/features/posts/domain/reaction_model.dart';
 import 'package:openstack/src/features/posts/presentation/controllers/post_controller.dart';
 import 'package:openstack/src/features/posts/presentation/providers/post_providers.dart';
+import 'package:openstack/src/features/posts/presentation/widgets/post_card_more_options_modal_sheet.dart';
 import 'package:openstack/src/features/posts/presentation/widgets/tags_view.dart';
-import 'package:openstack/src/router/app_router.dart';
 import 'package:openstack/src/shared/extensions/context_extensions.dart';
 import 'package:openstack/src/shared/extensions/text_style_extensions.dart';
 import 'package:openstack/src/shared/widgets/filled_icon_count_button.dart';
@@ -86,9 +85,14 @@ class PostCard extends ConsumerWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      context.pushNamed(
-                        AppRoute.postForm.name,
-                        extra: post,
+                      // context.pushNamed(
+                      //   AppRoute.postForm.name,
+                      //   extra: post,
+                      // );
+                      showModalBottomSheet(
+                        useRootNavigator: true,
+                        context: context,
+                        builder: (_) => const PostCardMoreOptionsModalSheet(),
                       );
                     },
                     icon: const Icon(

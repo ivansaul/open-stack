@@ -38,8 +38,8 @@ GET {{baseUrl}}/api/collections/users/records/{{userId}}
 GET {{baseUrl}}/api/collections/posts/records
 
 ### Get a post by id
-@productId = bv5m19uhqqftqb5
-GET {{baseUrl}}/api/collections/posts/records/{{productId}}
+@postId = rzd828p1mtz2zvf
+GET {{baseUrl}}/api/collections/posts/records/{{postId}}
 
 ### Create post
 POST {{baseUrl}}/api/collections/posts/records
@@ -47,7 +47,27 @@ Content-Type: application/json
 Authorization: {{adminAuthToken}}
 
 {
-    "title": "Test product1"
+    "profile_id": "p9z41nh6www67rz",
+    "title": "test",
+    "summary": "null",
+    "tags": "null",
+    "thumbnail_id": "null",
+    "source_url": "test.com"
+}
+
+### Update post
+@productId = bv5m19uhqqftqb5
+PUT {{baseUrl}}/api/collections/posts/records/{{productId}}
+Content-Type: application/json
+Authorization: {{adminAuthToken}}
+
+{
+    "profile_id": "bv5m19uhqqftqb5",
+    "title": "test",
+    "summary": "test",
+    "tags": "JSON",
+    "thumbnail_id": "RELATION_RECORD_ID",
+    "source_url": "test"
 }
 
 
